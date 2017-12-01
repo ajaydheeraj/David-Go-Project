@@ -1,0 +1,28 @@
+
+Game plan until next time:
+
+
+
+
+How do I use git with Floobits?
+    We use both Floobits and git to develop Floobits. We typically create a workspace for each of our git repos. Repos are great for tracking and sharing stable code. Workspaces are great for writing and reviewing code. In our typical workflow, only one person commits while we pair. Sometimes, it is necessary for both people to commit to the same remote after some changes have already been committed:
+
+    git fetch origin some-branch
+    git checkout some-branch
+    git stash -u  # stash changes and untracked files
+    git merge origin/some-branch 
+    git stash pop
+
+So I think we'll need to make a git repo, add all the files to it, and then make that the Floobits workspace?
+
+
+Now:
+Ko
+Pass, Pass -> End Game, Score Tally
+Start Screen, End Screen
+Settings Menu -> option to turn off sound
+
+
+
+
+make it very explicit where you're writing your code so that we know where to look
