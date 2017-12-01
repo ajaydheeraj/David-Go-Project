@@ -10,8 +10,14 @@ class Colors(object):
 	WHITE = (255, 255, 255)
 	TAN = (210, 180, 140)
 	FERNGREEN = (79, 121, 66)
-
-	index = {(0, 0, 0): "Black", (255, 255, 255): "White", (210, 180, 140): "Tan", (79, 121, 66): "FernGreen"}
+	BORDER = (0,128,255)
+	index = {
+		(0, 0, 0): "Black", 
+		(255, 255, 255): "White",
+		(210, 180, 140): "Tan",
+		(79, 121, 66): "FernGreen",
+		(0,128,255): "BORDER"
+		}
 
 # contains functions that I think might be pretty common and idk where else to put them
 class Functions(object):

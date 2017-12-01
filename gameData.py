@@ -38,6 +38,7 @@ class Data(object):
 		elif self.turn == 2:
 			color = Colors.WHITE
 		if self.board[row][col] == None:
+		  # make all of the previous stones not lastPlaced
 			for meh in self.board:
 				for corner in meh:
 					if (corner != None):
@@ -109,8 +110,9 @@ class Stone(object):
 	# tells python how to draw the piece
 	def draw(self, screen):
 		pygame.draw.circle(screen, self.color, self.center, self.radius)
+		#puts the border, will add the color to static later 
 		if (self.lastPlaced):
-			pygame.draw.circle(screen, (0,128,255), self.center, self.radius, 2)
+			pygame.draw.circle(screen, Colors.BORDER, self.center, self.radius, 2)
 	# checks if the piece should be removed
 	def updatePiece(self, board):
 		# if the piece has been checked, go back
