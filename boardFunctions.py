@@ -27,20 +27,17 @@ def drawBoard(screen):
 
 # draws each piece one by one
 def drawPieces(screen, board):
-    lastCorner = None
     for row in board:
         for corner in row:
             if corner != None:
-                lastCorner = corner
                 corner.draw(screen)
-    if (lastCorner != None):
-        lastCorner.drawLast(screen)
 
 
 # draws the ghost piece that follows the mouse, helps the player know where he's clicking
 def drawGhost(screen, coords, board, color):
 	row, col = Data.closestCorner(coords)
 	ghost = Stone(row, col, color)
+	ghost.lastPlaced = False
 	try:
 		check = (math.sqrt(row), math.sqrt(col)) # makes sure it doesn't display for negative rows and columns
 		if board[row][col] == None:

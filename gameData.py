@@ -38,6 +38,10 @@ class Data(object):
 		elif self.turn == 2:
 			color = Colors.WHITE
 		if self.board[row][col] == None:
+			for meh in self.board:
+				for corner in meh:
+					if (corner != None):
+						corner.lastPlaced = False
 			self.oldBoard = copy.deepcopy(self.board)
 			self.board[row][col] = Stone(row, col, color)
 			self.updateBoard()
@@ -88,6 +92,7 @@ class Stone(object):
 		self.color = color
 		self.center = self.getCenter()
 		self.wasChecked = False
+		self.lastPlaced = True
 
 	# this was just used for debugging purposes
 	def __repr__(self):
@@ -104,7 +109,8 @@ class Stone(object):
 	# tells python how to draw the piece
 	def draw(self, screen):
 		pygame.draw.circle(screen, self.color, self.center, self.radius)
-
+		if (self.lastPlaced):
+			pygame.draw.circle(screen, (0,128,255), self.center, self.radius, 2)
 	# checks if the piece should be removed
 	def updatePiece(self, board):
 		# if the piece has been checked, go back
