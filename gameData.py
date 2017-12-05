@@ -3,6 +3,7 @@
 import pygame
 import copy
 from static import *
+from textBoxes import *
 
 # game data is stored here
 class Data(object):
@@ -14,7 +15,17 @@ class Data(object):
 		self.oldBoard = copy.deepcopy(self.board)
 		self.turn = 1
 		self.mousePos = (0, 0)
+		self.start = True
+		self.inGame = False
 		self.gameOver = False
+		self.textBox = None
+		self.startButtons = self.createStartButtons()
+		
+	# creates the start screen buttons and returns them in a list
+	def createStartButtons(self):
+		pb = PlayButton()
+		ib = InstructionsButton()
+		return (pb, ib)
 
 	# creates a 19x19 board of "Nones"
 	@staticmethod
@@ -37,19 +48,24 @@ class Data(object):
 			color = Colors.BLACK
 		elif self.turn == 2:
 			color = Colors.WHITE
+
 		if self.board[row][col] == None:
-		  # make all of the previous stones not lastPlaced
-			for meh in self.board:
-				for corner in meh:
+			pygame.mixer.music.load('click_sound.wav')
+			pygame.mixer.music.play()
+			
+			# make all of the previous stones not lastPlaced
+			for boardRow in self.board:
+				for corner in boardRow:
 					if (corner != None):
 						corner.lastPlaced = False
+
 			self.oldBoard = copy.deepcopy(self.board)
 			self.board[row][col] = Stone(row, col, color)
 			self.updateBoard()
-			
 			self.passTurn()
+			return True
 
-	# your closestCorner function, just moved to a different place and slightly modified to return row and col
+	# returns row and col of the closest corner
 	@staticmethod
 	def closestCorner(*args):
 		# the case if a tuple of coordinates is inputted instead of an x and a y
@@ -64,6 +80,7 @@ class Data(object):
 	# changes from player 1 to player 2
 	def passTurn(self):
 		self.turn = 3 - self.turn
+		self.updateBoard()
 		for row in self.board:
 			for corner in row:
 				if corner != None:
@@ -112,7 +129,7 @@ class Stone(object):
 		pygame.draw.circle(screen, self.color, self.center, self.radius)
 		#puts the border, will add the color to static later 
 		if (self.lastPlaced):
-			pygame.draw.circle(screen, Colors.BORDER, self.center, self.radius, 2)
+			pygame.draw.circle(screen, Colors.LIGHTBLUE, self.center, self.radius, 2)
 	# checks if the piece should be removed
 	def updatePiece(self, board):
 		# if the piece has been checked, go back

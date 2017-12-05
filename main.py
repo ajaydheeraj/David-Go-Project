@@ -4,6 +4,7 @@ import pygame
 from boardFunctions import *
 from gameData import *
 from static import *
+from textBoxes import *
 
 
 class GoGame(object):
@@ -15,10 +16,27 @@ class GoGame(object):
         pass
 
     def mouseReleased(self, x, y):
-        self.data.placeStone(x, y)
-        pygame.mixer.music.load('click_sound.wav')
-        pygame.mixer.music.play()
-        pygame.mixer.music.get_volume()
+        if self.data.start:
+            if Functions.clickInBounds((x, y), PlayButton.bounds):
+                self.data.start = False
+                self.data.inGame = True
+        elif self.data.inGame:
+            
+            # does text box stuff if there is a text box open
+            if self.data.textBox != None:
+                if Functions.clickInBounds((x, y), GoConstants.YESBOXBOUNDS):
+                    if self.data.textBox.action == "start over":
+                        self.data.board = self.data.initBoard()
+                    elif self.data.textBox.action == "undo move":
+                        self.data.undoMove()
+                    elif self.data.textBox.action == "pass the turn":
+                        self.data.passTurn()
+                    self.data.textBox = None
+                elif Functions.clickInBounds((x, y), GoConstants.NOBOXBOUNDS):
+                    self.data.textBox = None
+            
+            else:
+                self.data.placeStone(x, y)
 
     def mouseMotion(self, x, y):
         self.data.mousePos = (x, y)
@@ -26,12 +44,18 @@ class GoGame(object):
     def mouseDrag(self, x, y):
         pass
 
-	# "r" restarts the game, "u" undoes the previous move
+    # "r" restarts the game, "u" undoes the previous move
     def keyPressed(self, keyCode, modifier):
-        if keyCode == pygame.K_r:
-        	self.data.__init__()
-        elif keyCode == pygame.K_u:
-        	self.data.undoMove()
+        if self.data.start:
+            pass
+        elif self.data.inGame:
+            if self.data.textBox == None:
+                if keyCode == pygame.K_r:
+                    self.data.textBox = TextBox("start over")
+                elif keyCode == pygame.K_u:
+                    self.data.textBox = TextBox("undo move")
+                elif keyCode == pygame.K_p:
+                    self.data.textBox = TextBox("pass the turn")
 
     def keyReleased(self, keyCode, modifier):
         pass
@@ -41,9 +65,20 @@ class GoGame(object):
 
     # draws the board, then the pieces, then the ghost piece that follows the mouse
     def redrawAll(self):
-        drawBoard(self.screen)
-        drawPieces(self.screen, self.data.board)
-        drawGhost(self.screen, self.data.mousePos, self.data.board, Data.playerColors[self.data.turn])
+        # draws the start screen
+        if self.data.start:
+            drawStartBG(self.screen)
+            for button in self.data.startButtons:
+                button.draw(self.screen)
+                
+        # draws the game screen, board, pieces, etc
+        elif self.data.inGame:
+            drawBoard(self.screen)
+            drawPieces(self.screen, self.data.board)
+            if self.data.textBox == None:
+                drawGhost(self.screen, self.data.mousePos, self.data.board, Data.playerColors[self.data.turn])
+            else:
+                drawTextBox(self.screen, self.data.textBox)
 
     # returns whether a specific key is being held
     def isKeyPressed(self, key):
@@ -56,7 +91,6 @@ class GoGame(object):
         self.title = title
         self.bgColor = GoConstants.BACKGROUND
         pygame.init()
-
 
     def run(self):
 
@@ -100,7 +134,6 @@ class GoGame(object):
             pygame.display.flip()
 
         pygame.quit()
-
 
 def main():
     game = GoGame()

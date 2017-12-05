@@ -1,35 +1,33 @@
-### used to define constants that we'll use in our code
+### used to define constants that I'll use in my code
 
 import pygame
 import decimal
 
-
-# just a place to store colors that we're using
+# just a place to store colors that I'm using
 class Colors(object):
 	BLACK = (0, 0, 0)
 	WHITE = (255, 255, 255)
 	TAN = (210, 180, 140)
 	FERNGREEN = (79, 121, 66)
-	BORDER = (0,128,255)
+	LIGHTBLUE = (0,128,255)
 	index = {
 		(0, 0, 0): "Black", 
 		(255, 255, 255): "White",
 		(210, 180, 140): "Tan",
 		(79, 121, 66): "FernGreen",
-		(0,128,255): "BORDER"
+		(0, 128, 255): "LightBlue"
 		}
 
 # contains functions that I think might be pretty common and idk where else to put them
 class Functions(object):
 
-	# this function straight up stolen from 112 class
-	# rounds with ties going away from zero
+	# rounds with ties going away from zero, borrowed from 112 website
 	@staticmethod
 	def round(n):
 		rounding = decimal.ROUND_HALF_UP
 		return int(decimal.Decimal(n).to_integral_value(rounding=rounding))
 
-	# again, ripped from 112; used solely for testing
+	# again, borrowed from 112 website; used solely for testing
 	@staticmethod
 	def print2dList(a):
 
@@ -64,8 +62,17 @@ class Functions(object):
 				print(formatSpec % str(a[row][col]), end="")
 			print(" ]", end="")
 		print("]")
+	
+	# checks whether a click is within rectangular bounds
+	@staticmethod
+	def clickInBounds(mousePos, bounds):
+		if mousePos[0] < bounds[0] or mousePos[0] > (bounds[0] + bounds[2]):
+			return False
+		if mousePos[1] < bounds[1] or mousePos[1] > (bounds[1] + bounds[3]):
+			return False
+		return True
 
-# constants we might need for the board, pieces, etc.
+# constants that might be necessary for the board, pieces, etc.
 class GoConstants(object):
 	BOARDWIDTH = 600
 	BOARDHEIGHT = 600
@@ -74,3 +81,5 @@ class GoConstants(object):
 	MARGIN = 30
 	TILESIZE = 30
 	BACKGROUND = Colors.FERNGREEN
+	YESBOXBOUNDS = (75, 325, 100, 50)
+	NOBOXBOUNDS = (375, 325, 100, 50)
