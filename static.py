@@ -83,3 +83,4 @@ class GoConstants(object):
 	BACKGROUND = Colors.FERNGREEN
 	YESBOXBOUNDS = (75, 325, 100, 50)
 	NOBOXBOUNDS = (375, 325, 100, 50)
+	DIRECTIONS = {"up": (0, 1), "down": (0, -1), "left": (-1, 0), "right": (1, 0)}

@@ -19,12 +19,49 @@ class TextBox(pygame.sprite.Sprite):
         screen.blit(self.text, (75, 225))
         BoolBox("Yes").draw(screen)
         BoolBox("No").draw(screen)
+        
+    def __repr__(self):
+        return self.action
+        
+# object for clicking to remove dead stones text box, draws from TextBox super
+class DeadStoneBox(TextBox):
+    def __init__(self, action):
+        super().__init__(action)
+        self.text = pygame.font.Font(None, 36).render("Click to remove dead stones", True, (0, 0, 0))
+        self.text2 = pygame.font.Font(None, 36).render("Press 'D' when done", True, (0, 0, 0))
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, Colors.WHITE, self.bounds)
+        pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
+        screen.blit(self.text, (75, 225))
+        screen.blit(self.text2, (75, 275))
+        BoolBox("OK").draw(screen)
+        
+# The box that appears when the game is over
+class GameOverBox(pygame.sprite.Sprite):
+    bounds = (50, 200, 500, 200)
+    
+    def __init__(self, p1score, p2score):
+        if p1score > p2score:
+            gameStats = ("Black", p1score, p2score)
+        else:
+            gameStats = ("White", p2score, p1score)
+        self.text1 = pygame.font.Font(None, 36).render("GAME OVER!", True, (0, 0, 0))
+        self.text2 = pygame.font.Font(None, 36).render("Winner is %s, %d to %d"%gameStats, True, (0, 0, 0))
+        self.text3 = pygame.font.Font(None, 28).render("(Click anywhere to close this box)", True, (0, 0, 0))
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, Colors.WHITE, self.bounds)
+        pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
+        screen.blit(self.text1, (75, 225))
+        screen.blit(self.text2, (75, 275))
+        screen.blit(self.text3, (75, 325))
       
 # the "yes" and "no" buttons on one such text box
 class BoolBox(pygame.sprite.Sprite):
     def __init__(self, boolean):
         self.text = pygame.font.Font(None, 36).render(boolean, True, (0, 0, 0))
-        if boolean == "Yes":
+        if boolean == "Yes" or boolean == "OK":
             self.bounds = GoConstants.YESBOXBOUNDS
             self.textPos = (100, 337)
         elif boolean == "No":

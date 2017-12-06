@@ -33,6 +33,14 @@ def drawPieces(screen, board):
                 corner.draw(screen)
             except:
                 pass
+                
+# draws a blue circle showing which piece was last placed
+def drawLastPlacedCircle(screen, location):
+    if location == None:
+        return
+    x = GoConstants.MARGIN + location[1] * GoConstants.TILESIZE
+    y = GoConstants.MARGIN + location [0] * GoConstants.TILESIZE
+    pygame.draw.circle(screen, Colors.LIGHTBLUE, (x, y), Stone.radius, 2)
 
 # draws the ghost piece that follows the mouse, helps the player know where he's clicking
 def drawGhost(screen, coords, board, color):

@@ -11,15 +11,28 @@ class Data(object):
 
 	# initializes data
 	def __init__(self):
-		self.board = self.initBoard()
-		self.oldBoard = copy.deepcopy(self.board)
-		self.turn = 1
 		self.mousePos = (0, 0)
 		self.start = True
 		self.inGame = False
+		self.removeStones = False
 		self.gameOver = False
 		self.textBox = None
 		self.startButtons = self.createStartButtons()
+		
+	# starting the game data
+	def initGame(self):
+		self.board = self.initBoard()
+		self.oldBoard = copy.deepcopy(self.board)
+		self.turn = 1
+		self.lastTurnPassed = False
+		self.p1score = 0
+		self.p2score = 0
+		self.start = False
+		self.inGame = True
+		self.removeStones = False
+		self.gameOver = False
+		self.textBox = None
+		self.lastPlaced = None
 		
 	# creates the start screen buttons and returns them in a list
 	def createStartButtons(self):
@@ -53,17 +66,17 @@ class Data(object):
 			pygame.mixer.music.load('click_sound.wav')
 			pygame.mixer.music.play()
 			
-			# make all of the previous stones not lastPlaced
-			for boardRow in self.board:
-				for corner in boardRow:
-					if (corner != None):
-						corner.lastPlaced = False
-
+			self.lastPlaced = (row, col)
 			self.oldBoard = copy.deepcopy(self.board)
 			self.board[row][col] = Stone(row, col, color)
 			self.updateBoard()
 			self.passTurn()
 			return True
+			
+	# removes a stone upon click
+	def removeStone(self, x, y):
+		row, col = self.closestCorner(x, y)
+		self.board[row][col] = None
 
 	# returns row and col of the closest corner
 	@staticmethod
@@ -99,7 +112,48 @@ class Data(object):
 			return
 		self.board = self.oldBoard
 		self.passTurn()
-
+		
+	# gets the scores from the board at the end of the game
+	def getScore(self):
+		# checks each square to see whether it belongs to black or white
+		for i in range(len(self.board)):
+			row = self.board[i]
+			for j in range(len(row)):
+				corner = row[j]
+				if isinstance(corner, Stone):
+					color = corner.color
+				elif corner == None:
+					color = self.getColor(self.board, i, j)
+				
+				if color == Colors.BLACK:
+					self.p1score += 1
+				elif color == Colors.WHITE:
+					self.p2score += 1
+			
+	# at the end of the game, returns the owner of an empty square
+	@staticmethod
+	def getColor(board, row, col):
+		directions = ["up", "down", "left", "right"]
+		color = None
+		
+		# checks in a given direction to find out who an empty space belongs to
+		def checkDirection(board, row, col, direction):
+			dir = GoConstants.DIRECTIONS[direction]
+			newRow, newCol = row + dir[1], col + dir[0]
+			if (not (0 <= newRow <= GoConstants.ROWS) or not (0 <= newCol <= GoConstants.COLUMNS)):
+				return None
+			elif isinstance(board[row][col], Stone):
+				return board[row][col].color
+			else:
+				return checkDirection(board, newRow, newCol, direction)
+		
+		for dir in directions:
+			color = checkDirection(board, row, col, dir)
+			if color != None:
+				break
+		
+		return color
+			
 # the stone object
 class Stone(object):
 	radius = 13
@@ -110,7 +164,6 @@ class Stone(object):
 		self.color = color
 		self.center = self.getCenter()
 		self.wasChecked = False
-		self.lastPlaced = True
 
 	# this was just used for debugging purposes
 	def __repr__(self):
@@ -127,9 +180,7 @@ class Stone(object):
 	# tells python how to draw the piece
 	def draw(self, screen):
 		pygame.draw.circle(screen, self.color, self.center, self.radius)
-		#puts the border, will add the color to static later 
-		if (self.lastPlaced):
-			pygame.draw.circle(screen, Colors.LIGHTBLUE, self.center, self.radius, 2)
+			
 	# checks if the piece should be removed
 	def updatePiece(self, board):
 		# if the piece has been checked, go back

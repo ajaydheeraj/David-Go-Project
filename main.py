@@ -1,4 +1,5 @@
 ### This is the mainloop, we use this to run the game
+### Loop framework created by Lukas Peraza, taken from 112 website
 
 import pygame
 from boardFunctions import *
@@ -18,25 +19,47 @@ class GoGame(object):
     def mouseReleased(self, x, y):
         if self.data.start:
             if Functions.clickInBounds((x, y), PlayButton.bounds):
-                self.data.start = False
-                self.data.inGame = True
+                self.data.initGame()
+                
         elif self.data.inGame:
-            
             # does text box stuff if there is a text box open
             if self.data.textBox != None:
+                # will do different things depending on the text box (which, in
+                # turn, appears when a key is pressed
                 if Functions.clickInBounds((x, y), GoConstants.YESBOXBOUNDS):
                     if self.data.textBox.action == "start over":
-                        self.data.board = self.data.initBoard()
+                        self.data.initGame()
+                        self.data.textBox = None
                     elif self.data.textBox.action == "undo move":
                         self.data.undoMove()
+                        self.data.textBox = None
+                    # the game ends when both players pass, otherwise it just 
+                    # passes the turn onto the next player
                     elif self.data.textBox.action == "pass the turn":
-                        self.data.passTurn()
-                    self.data.textBox = None
+                        if self.data.lastTurnPassed:
+                            self.data.textBox = DeadStoneBox("remove dead stones")
+                            self.data.lastPlaced = None
+                        else:
+                            self.data.lastTurnPassed = True
+                            self.data.passTurn()
+                            self.data.textBox = None
+                    elif self.data.textBox.action == "remove dead stones":
+                        self.data.textBox = None
+                        self.data.removeStones = True
                 elif Functions.clickInBounds((x, y), GoConstants.NOBOXBOUNDS):
                     self.data.textBox = None
             
+            # in remove-stone mode, clicking on a stone removes it
+            elif self.data.removeStones:
+                self.data.removeStone(x, y)
+            
+            # in-game mode, clicking puts down a stone
             else:
+                self.data.lastTurnPassed = False
                 self.data.placeStone(x, y)
+                
+        elif self.data.gameOver:
+            self.data.textBox = None
 
     def mouseMotion(self, x, y):
         self.data.mousePos = (x, y)
@@ -49,13 +72,23 @@ class GoGame(object):
         if self.data.start:
             pass
         elif self.data.inGame:
-            if self.data.textBox == None:
+            if self.data.textBox == None and not self.data.removeStones:
                 if keyCode == pygame.K_r:
                     self.data.textBox = TextBox("start over")
                 elif keyCode == pygame.K_u:
                     self.data.textBox = TextBox("undo move")
                 elif keyCode == pygame.K_p:
                     self.data.textBox = TextBox("pass the turn")
+            elif self.data.removeStones:
+                if keyCode == pygame.K_d:
+                    self.data.inGame = False
+                    self.data.removeStones = False
+                    self.data.gameOver = True
+                    self.data.getScore()
+                    self.data.textBox = GameOverBox(self.data.p1score, self.data.p2score)
+        elif self.data.gameOver:
+            if keyCode == pygame.K_r:
+                self.data.initGame()
 
     def keyReleased(self, keyCode, modifier):
         pass
@@ -75,11 +108,23 @@ class GoGame(object):
         elif self.data.inGame:
             drawBoard(self.screen)
             drawPieces(self.screen, self.data.board)
-            if self.data.textBox == None:
-                drawGhost(self.screen, self.data.mousePos, self.data.board, Data.playerColors[self.data.turn])
-            else:
+            if self.data.textBox != None:
                 drawTextBox(self.screen, self.data.textBox)
-
+            elif self.data.removeStones:
+                pass
+            else:
+                drawGhost(self.screen, self.data.mousePos, self.data.board, Data.playerColors[self.data.turn])
+                drawLastPlacedCircle(self.screen, self.data.lastPlaced)
+              
+        # draws a static board with a message displaying which player won over it
+        elif self.data.gameOver:
+            drawBoard(self.screen)
+            drawPieces(self.screen, self.data.board)
+            if self.data.textBox != None:
+                drawTextBox(self.screen, self.data.textBox)
+        
+        pygame.display.flip()
+                
     # returns whether a specific key is being held
     def isKeyPressed(self, key):
         return self._keys.get(key, False)
@@ -131,7 +176,6 @@ class GoGame(object):
                     playing = False
             self.screen.fill(self.bgColor)
             self.redrawAll()
-            pygame.display.flip()
 
         pygame.quit()
 
