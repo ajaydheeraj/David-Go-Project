@@ -12,6 +12,9 @@ class Data(object):
 
 	# initializes data
 	def __init__(self):
+		self.me = None
+		self.other = None
+		self.otherInGame = False
 		self.mousePos = (0, 0)
 		self.start = True
 		self.inGame = False
@@ -35,6 +38,8 @@ class Data(object):
 		self.gameOver = False
 		self.textBox = None
 		self.lastPlaced = None
+		self.playerBox = PlayerBox()
+		self.otherReadyToRemoveStones = False
 		
 	# creates the start screen buttons and returns them in a list
 	def createStartButtons(self):
@@ -74,7 +79,7 @@ class Data(object):
 			self.board[row][col] = Stone(row, col, color)
 			self.updateBoard()
 			self.passTurn()
-			return True
+			return row, col
 			
 	# removes a stone upon click
 	def removeStone(self, x, y):
@@ -93,10 +98,21 @@ class Data(object):
 		col = Functions.round((x - GoConstants.MARGIN) / GoConstants.TILESIZE)
 		return row, col
 
-	# changes from player 1 to player 2
-	def passTurn(self):
+	# changes between player 1 and player 2
+	def passTurn(self, justPassed=False):
+		# if this function was called as a resulf of a player just passing, not
+		# from the placeStone or undoMove functions
+		if justPassed:
+			if self.lastTurnPassed:
+				self.playerBox.update(off=True)
+				self.textBox = DeadStoneBox("remove dead stones")
+				self.lastPlaced = None
+			else:
+				self.lastTurnPassed = True
+				self.textBox = None
 		self.turn = 3 - self.turn
 		self.updateBoard()
+		self.playerBox.update()
 		for row in self.board:
 			for corner in row:
 				if corner != None:
@@ -114,6 +130,8 @@ class Data(object):
 		if self.board == self.oldBoard:
 			return
 		self.board = self.oldBoard
+		self.lastPlaced = None
+		self.textBox = None
 		self.passTurn()
 		
 	# gets the scores from the board at the end of the game
@@ -156,3 +174,8 @@ class Data(object):
 				break
 		
 		return color
+		
+	# checks if it's the local player's turn
+	def isMyTurn(self):
+		print(Colors.index[self.playerColors[self.turn]])
+		return Colors.index[self.playerColors[self.turn]] == self.me

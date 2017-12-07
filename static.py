@@ -11,11 +11,11 @@ class Colors(object):
 	FERNGREEN = (79, 121, 66)
 	LIGHTBLUE = (0,128,255)
 	index = {
-		(0, 0, 0): "Black", 
-		(255, 255, 255): "White",
-		(210, 180, 140): "Tan",
-		(79, 121, 66): "FernGreen",
-		(0, 128, 255): "LightBlue"
+		(0, 0, 0): "BLACK", 
+		(255, 255, 255): "WHITE",
+		(210, 180, 140): "TAN",
+		(79, 121, 66): "FERNGREEN",
+		(0, 128, 255): "LIGHTBLUE"
 		}
 
 # contains functions that I think might be pretty common and idk where else to put them
@@ -74,7 +74,7 @@ class Functions(object):
 
 # constants that might be necessary for the board, pieces, etc.
 class GoConstants(object):
-	BOARDWIDTH = 600
+	BOARDWIDTH = 800
 	BOARDHEIGHT = 600
 	ROWS = 18
 	COLUMNS = 18

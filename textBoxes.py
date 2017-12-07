@@ -74,11 +74,11 @@ class BoolBox(pygame.sprite.Sprite):
         
 # the "play" button on the start screen
 class PlayButton(pygame.sprite.Sprite):
-    bounds = (200, 250, 200, 50)
+    bounds = (300, 250, 200, 50)
     
     def __init__(self):
         self.text = pygame.font.Font(None, 36).render("PLAY", True, (0, 0, 0))
-        self.textPos = (270, 263)
+        self.textPos = (370, 263)
         
     def draw(self, screen):
         pygame.draw.rect(screen, Colors.WHITE, self.bounds)
@@ -87,11 +87,11 @@ class PlayButton(pygame.sprite.Sprite):
         
 # the "instructions" button on the start screen
 class InstructionsButton(pygame.sprite.Sprite):
-    bounds = (200, 325, 200, 50)
+    bounds = (300, 325, 200, 50)
     
     def __init__(self):
         self.text = pygame.font.Font(None, 36).render("INSTRUCTIONS", True, (0, 0, 0))
-        self.textPos = (205, 338)
+        self.textPos = (305, 338)
         
     def draw(self, screen):
         pygame.draw.rect(screen, Colors.WHITE, self.bounds)
@@ -100,13 +100,48 @@ class InstructionsButton(pygame.sprite.Sprite):
         
 # the title box on the start screen
 class TitleBox(pygame.sprite.Sprite):
-    bounds = (100, 50, 400, 75)
+    bounds = (200, 50, 400, 75)
     
     def __init__(self):
         self.text = pygame.font.Font(None, 50).render("Go Game", True, (0, 0, 0))
-        self.textPos = (230, 75)
+        self.textPos = (330, 75)
         
     def draw(self, screen):
         pygame.draw.rect(screen, Colors.WHITE, self.bounds)
         pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
         screen.blit(self.text, self.textPos)
+        
+# text box showing whose turn it is
+class PlayerBox(pygame.sprite.Sprite):
+    bounds = (600, 30, 180, 50)
+    blackCenter = (690, 200)
+    whiteCenter = (690, 450)
+    circleRadius = 90
+    
+    def __init__(self):
+        self.player = "BLACK"
+        self.text = pygame.font.Font(None, 36).render("%s's turn" % self.player, True, (0, 0, 0))
+        self.textPos = (605, 45)
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, Colors.WHITE, self.bounds)
+        pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
+        screen.blit(self.text, self.textPos)
+        pygame.draw.circle(screen, Colors.BLACK, self.blackCenter, self.circleRadius)
+        pygame.draw.circle(screen, Colors.WHITE, self.whiteCenter, self.circleRadius)
+        if self.player == "NO ONE":
+            return
+        elif self.player == "BLACK":
+            turn = self.blackCenter
+        elif self.player == "WHITE":
+            turn = self.whiteCenter
+        pygame.draw.circle(screen, Colors.LIGHTBLUE, turn, self.circleRadius, 10)
+        
+    def update(self, off=False):
+        if self.player == "BLACK":
+            self.player = "WHITE"
+        elif self.player == "WHITE":
+            self.player = "BLACK"
+        if off:
+            self.player = "NO ONE"
+        self.text = pygame.font.Font(None, 36).render("%s's turn" % self.player, True, (0, 0, 0))
