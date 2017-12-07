@@ -6,7 +6,7 @@ from boardFunctions import *
 from gameData import *
 from static import *
 from textBoxes import *
-
+from stones import *
 
 class GoGame(object):
 
@@ -18,10 +18,14 @@ class GoGame(object):
 
     def mouseReleased(self, x, y):
         if self.data.start:
-            if Functions.clickInBounds((x, y), PlayButton.bounds):
-                self.data.initGame()
+            if not self.data.instructionsScreen:
+                if Functions.clickInBounds((x, y), PlayButton.bounds):
+                    self.data.initGame()
+                elif Functions.clickInBounds((x, y), InstructionsButton.bounds):
+                    self.data.instructionsScreen = True
+                    return
                 
-        elif self.data.inGame:
+        elif self.data.inGame and not self.data.instructionsScreen:
             # does text box stuff if there is a text box open
             if self.data.textBox != None:
                 # will do different things depending on the text box (which, in
@@ -60,6 +64,9 @@ class GoGame(object):
                 
         elif self.data.gameOver:
             self.data.textBox = None
+            
+        if self.data.instructionsScreen:
+            self.data.instructionsScreen = False
 
     def mouseMotion(self, x, y):
         self.data.mousePos = (x, y)
@@ -79,6 +86,8 @@ class GoGame(object):
                     self.data.textBox = TextBox("undo move")
                 elif keyCode == pygame.K_p:
                     self.data.textBox = TextBox("pass the turn")
+                elif keyCode == pygame.K_i and self.data.textBox == None:
+                    self.data.instructionsScreen = True
             elif self.data.removeStones:
                 if keyCode == pygame.K_d:
                     self.data.inGame = False
@@ -88,7 +97,7 @@ class GoGame(object):
                     self.data.textBox = GameOverBox(self.data.p1score, self.data.p2score)
         elif self.data.gameOver:
             if keyCode == pygame.K_r:
-                self.data.initGame()
+                self.data.__init__()
 
     def keyReleased(self, keyCode, modifier):
         pass
@@ -122,6 +131,10 @@ class GoGame(object):
             drawPieces(self.screen, self.data.board)
             if self.data.textBox != None:
                 drawTextBox(self.screen, self.data.textBox)
+         
+        # creates the instructions screen on top of everything else
+        if self.data.instructionsScreen:
+            drawInstructions(self.screen)
         
         pygame.display.flip()
                 

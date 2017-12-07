@@ -4,6 +4,7 @@ import pygame
 import math
 from static import *
 from gameData import *
+from stones import *
 
 # for drawing the board
 def drawBoard(screen):
@@ -63,3 +64,27 @@ def drawStartBG(screen):
     image = pygame.image.load("goBG.png")
     background = pygame.transform.scale(image, (GoConstants.BOARDWIDTH, GoConstants.BOARDHEIGHT))
     screen.blit(background, (0, 0))
+    
+# shows the game's instructions
+def drawInstructions(screen):
+    pygame.draw.rect(screen, Colors.WHITE, (0, 0, GoConstants.BOARDWIDTH, GoConstants.BOARDHEIGHT))
+    pygame.draw.rect(screen, Colors.BLACK, (0, 0, GoConstants.BOARDWIDTH, GoConstants.BOARDHEIGHT), 15)
+    text1 = pygame.font.Font(None, 50).render("INSTRUCTIONS", True, (0, 0, 0))
+    text2 = pygame.font.Font(None, 42).render("Click PLAY to begin!", True, (0, 0, 0))
+    text3 = pygame.font.Font(None, 36).render("While in-game, click on a corner to play a piece", True, (0, 0, 0))
+    text4 = pygame.font.Font(None, 36).render("Press 'u' to undo a move", True, (0, 0, 0))
+    text5 = pygame.font.Font(None, 36).render("Press 'p' to pass your turn", True, (0, 0, 0))
+    text6 = pygame.font.Font(None, 36).render("Press 'r' to reset the game", True, (0, 0, 0))
+    text7 = pygame.font.Font(None, 36).render("Press 'i' to pull up these instructions again", True, (0, 0, 0))
+    text8 = pygame.font.Font(None, 36).render("The game ends when both players pass turns", True, (0, 0, 0))
+    text9 = pygame.font.Font(None, 28).render("(Click anywhere to exit)", True, (0, 0, 0))
+    
+    screen.blit(text1, (175, 25))
+    screen.blit(text2, (25, 125))
+    screen.blit(text3, (25, 200))
+    screen.blit(text4, (25, 250))
+    screen.blit(text5, (25, 300))
+    screen.blit(text6, (25, 350))
+    screen.blit(text7, (25, 400))
+    screen.blit(text8, (25, 450))
+    screen.blit(text9, (175, 550))

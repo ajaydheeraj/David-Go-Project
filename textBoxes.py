@@ -97,3 +97,16 @@ class InstructionsButton(pygame.sprite.Sprite):
         pygame.draw.rect(screen, Colors.WHITE, self.bounds)
         pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
         screen.blit(self.text, self.textPos)
+        
+# the title box on the start screen
+class TitleBox(pygame.sprite.Sprite):
+    bounds = (100, 50, 400, 75)
+    
+    def __init__(self):
+        self.text = pygame.font.Font(None, 50).render("Go Game", True, (0, 0, 0))
+        self.textPos = (230, 75)
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, Colors.WHITE, self.bounds)
+        pygame.draw.rect(screen, Colors.BLACK, self.bounds, 5)
+        screen.blit(self.text, self.textPos)
